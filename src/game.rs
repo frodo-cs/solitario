@@ -1,23 +1,48 @@
 use crate::deck::Deck;
 use crate::table::Table;
-use crate::card::Card;
+use std::error::Error;
 
-pub fn start(){
-    let _ranks = ["2", "3","4","5","6","7","8","9","Z","J","Q","K","A"]; 
-    let _suits = ["Cr", "Tn", "En", "Dr"];
-
-    let deck = Deck::new(0);
-    let mut table = Table::new();
-
-    let mut card = Card::new("2".to_string(), "Cr".to_string());
-    println!("{:?}", card);
-    card.flip();
-    println!("{:?}", card);
-
+#[derive(Debug)]
+pub struct Game {
+    pub table: Table
 }
 
-fn set_up(mut deck: Deck, mut cards: [Vec<Card>; 7]) {
-    for card in deck.cards.iter() {
+impl Game {
+    pub fn new(seed: u64) -> Game {
+        let mut game = Game {
+            table: Table::new()
+        };
 
+        let mut deck = Deck::new(seed);
+
+        Game::setup_tableu(&mut game, &mut deck);
+        Game::setup_stock(&mut game, &mut deck);
+        game
+    }
+
+    fn setup_tableu(game: &mut Game, deck: &mut Deck){
+        for i in 0..7 {
+            for j in 0..i+1 {
+                game.table.tableau[i].push(deck.cards.pop().unwrap());
+                if i == j {
+                    game.table.tableau[i][j].flip();
+                }
+            }
+        }
+    }
+
+    fn setup_stock(game: &mut Game, deck: &mut Deck){
+        while deck.cards.len() > 0 {
+            game.table.stock.push(deck.cards.pop().unwrap());
+        }
+    }
+
+    pub fn draw_card(&mut self) ->  Result<i32, i32> {
+        let card = self.table.stock.pop();
+        if card.is_none() {
+            return Err(1) 
+        }
+        self.table.waste.push(card.unwrap());
+        Ok(0)     
     }
 }

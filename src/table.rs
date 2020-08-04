@@ -1,25 +1,22 @@
 use crate::card::Card;
 
+#[derive(Debug)]
 pub struct Table {
-    pub table: [Vec<Card>; 7],
-    pub suits: [Vec<Card>; 4],
-    pub draw: Vec<Card>,
-    pub discard: Vec<Card>,
+    pub tableau: [Vec<Card>; 7],
+    pub foundation: [Vec<Card>; 4],
+    pub stock: Vec<Card>,
+    pub waste: Vec<Card>,
     pub c: i32
 }
 
 impl Table {
     pub fn new() -> Table {
         Table {
-            table: [vec![], vec![], vec![], vec![], vec![], vec![], vec![]],
-            suits: [vec![], vec![], vec![], vec![]],
-            draw: vec![],
-            discard: vec![],
+            tableau: [vec![], vec![], vec![], vec![], vec![], vec![], vec![]],
+            foundation: [vec![], vec![], vec![], vec![]],
+            stock: vec![],
+            waste: vec![],
             c: 7
         }
-    }
-
-    pub fn print(&self) {
-        println!("{:?}", self.discard);
     }
 }

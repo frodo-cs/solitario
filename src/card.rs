@@ -2,7 +2,7 @@
 pub struct Card {
     rank: String,
     suit: String,
-    flipped: bool
+    face_down: bool
 }
 
 impl Card {
@@ -10,11 +10,11 @@ impl Card {
         Card {
             rank: rank,
             suit: suit,
-            flipped: true
+            face_down: true
         }
     }
 
     pub fn flip(&mut self) {
-        self.flipped = !self.flipped;
+        self.face_down = !self.face_down;
     }
 }
