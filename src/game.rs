@@ -24,7 +24,7 @@ impl Game {
             for j in 0..i+1 {
                 game.table.tableau[i].push(deck.cards.pop().unwrap());
                 if i == j {
-                    game.table.tableau[i][j].flip();
+                   game.table.tableau[i][j].flip();
                 }
             }
         }
@@ -40,6 +40,8 @@ impl Game {
         let col1 = 2;
         let col2 = 1;
 
+        println!("{}", self.table);
+
         self.table.stock_to_waste();
         self.table.stock_to_waste();
         self.table.stock_to_waste();
@@ -47,30 +49,16 @@ impl Game {
         self.table.stock_to_waste();
         self.table.stock_to_waste();
 
-       // println!("C 1: {:?}", self.table.tableau[col1]);
-       // println!("C 2: {:?}", self.table.tableau[col2]);
-        //println!("W: {:?}", self.table.waste);
-        //println!("S: {:?}", self.table.stock);
-        println!("F: {:?}", self.table.foundation[col2]);
- 
-        //self.table.waste_to_tableau(col1);
-        //self.table.tableau_to_tableau(col1, col2);
-        //self.table.waste_to_stock();
+        println!("{}", self.table);
+
+        self.table.waste_to_tableau(col1);
+        self.table.waste_to_tableau(col2);
+        self.table.waste_to_tableau(col1);
+        self.table.tableau_to_tableau(col1, col2);
+        // self.table.waste_to_stock();
         self.table.tableau_to_foundation(col1, col2);
-        self.table.tableau_to_foundation(col1, col2);
+        self.table.tableau_to_foundation(col2, col1);
 
-        println!("\n====================\n");
-
-       // println!("C 1: {:?}", self.table.tableau[col1]);
-       // println!("C 2: {:?}", self.table.tableau[col2]);
-        //println!("W: {:?}", self.table.waste);
-       // println!("S: {:?}", self.table.stock);
-        println!("F: {:?}", self.table.foundation[col2]);
-    }
-
-    pub fn print(&mut self){
-        self.test();
         println!("{}", self.table);
     }
-
 }

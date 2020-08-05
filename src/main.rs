@@ -6,10 +6,8 @@ mod card;
 fn main() {
     let mut g = game::Game::new(0);
 
-    g.print();
+    g.test();
 
-  //  g.print();
-    
     /*
     for i in 0..26 {
         match g.draw_card() {

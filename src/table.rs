@@ -39,7 +39,7 @@ impl Table {
 
     pub fn stock_to_waste(&mut self) {
         let mut card = self.stock.cards.pop().unwrap();
-        card.flip();
+       card.flip();
         self.waste.cards.push(card);
     }
 
@@ -47,7 +47,8 @@ impl Table {
         let card = self.tableau[col1].pop().unwrap(); 
         self.tableau[col2].push(card);
 
-        if self.tableau[col1].len() > 0 {
+        let card3 = self.tableau[col1].last().unwrap();
+        if self.tableau[col1].len() > 0 && card3.facing_down() {
             let mut card3 = self.tableau[col1].pop().unwrap();
             card3.flip();
             self.tableau[col1].push(card3);
@@ -58,7 +59,8 @@ impl Table {
         let card = self.tableau[col].pop().unwrap();
         self.foundation[rank].cards.push(card);
 
-        if self.tableau[col].len() > 0 {
+        let card3 = self.tableau[col].last().unwrap();
+        if self.tableau[col].len() > 0 && card3.facing_down() {
             let mut card2 = self.tableau[col].pop().unwrap();
             card2.flip();
             self.tableau[col].push(card2);
@@ -86,7 +88,17 @@ impl Default for Foundation {
 impl fmt::Display for Table {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}\t{}\t  \t{}\t{}\t{}\t{}\n", self.stock, self.waste, self.foundation[0], self.foundation[1], self.foundation[2], self.foundation[3]);
-        write!(f, "{}\t{}\t{}\t{}\t{}\t{}\t{}", self.stock, self.stock, self.stock, self.stock, self.stock, self.stock, self.stock)
+        for i in 0..7 {
+            for j in 0..7 {
+                if i < self.tableau[j].len() {
+                    write!(f, "{}\t", self.tableau[j][i]);
+                } else {
+                    write!(f, "  \t");
+                }       
+            }
+            write!(f, "\n");
+        }
+        write!(f, "")
     }
 }
 
