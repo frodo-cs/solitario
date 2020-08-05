@@ -1,3 +1,4 @@
+use std::process::Command;
 use std::env;
 use std::io;
 mod game;
@@ -18,19 +19,20 @@ fn main() {
     }
     
     let mut g = game::Game::new(seed);
+    g.test();
 
     let mut input = String::new();
-
     while input.as_str().trim() != "<ESC>" {
-
         input = read_input();
-
         match input.as_str().trim() {
             "n/N" => g.test(),
             "<RET>" => g.test(),
             "u/U" => g.test(),
             "<ESC>" => (),
-            _ => println!("No es un comando válido"),
+            a => match a.parse::<u64>() {
+                Ok(ok) => select_column(ok),
+                Err(_) => println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 0, 1, 2, 3,4, 5, 6")
+            }
         }
     }
     
@@ -56,4 +58,12 @@ fn read_input() -> String {
             String::from("Error")
         }
     }
+}
+
+fn select_column(c: u64) {
+    if c < 7 {
+        println!("Columna: {}", c);
+    } else {
+        println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 0, 1, 2, 3,4, 5, 6");
+    }  
 }
