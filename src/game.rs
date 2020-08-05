@@ -1,6 +1,6 @@
 use crate::deck::Deck;
 use crate::table::Table;
-use std::error::Error;
+use crate::card::Card;
 
 #[derive(Debug)]
 pub struct Game {
@@ -37,12 +37,33 @@ impl Game {
         }
     }
 
-    pub fn draw_card(&mut self) ->  Result<i32, i32> {
-        let card = self.table.stock.pop();
-        if card.is_none() {
-            return Err(1) 
-        }
-        self.table.waste.push(card.unwrap());
-        Ok(0)     
+    pub fn test(&mut self){
+        let col1 = 2;
+        let col2 = 1;
+
+        self.table.stock_to_waste();
+        self.table.stock_to_waste();
+        self.table.stock_to_waste();
+        self.table.stock_to_waste();
+        self.table.stock_to_waste();
+        self.table.stock_to_waste();
+
+       // println!("C 1: {:?}", self.table.tableau[col1]);
+       // println!("C 2: {:?}", self.table.tableau[col2]);
+        println!("W: {:?}", self.table.waste);
+        println!("S: {:?}", self.table.stock);
+        //println!("F: {:?}", self.table.foundation[col1]);
+ 
+        //self.table.waste_to_tableau(col1);
+        self.table.tableau_to_tableau(col1, col2);
+        self.table.waste_to_stock();
+
+        println!("\n====================\n");
+
+       // println!("C 1: {:?}", self.table.tableau[col1]);
+       // println!("C 2: {:?}", self.table.tableau[col2]);
+        println!("W: {:?}", self.table.waste);
+        println!("S: {:?}", self.table.stock);
+        //println!("F: {:?}", self.table.foundation[col1]);
     }
 }
