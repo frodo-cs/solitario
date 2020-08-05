@@ -1,6 +1,5 @@
 use crate::deck::Deck;
 use crate::table::Table;
-use crate::card::Card;
 
 #[derive(Debug)]
 pub struct Game {
@@ -33,7 +32,7 @@ impl Game {
 
     fn setup_stock(game: &mut Game, deck: &mut Deck){
         while deck.cards.len() > 0 {
-            game.table.stock.push(deck.cards.pop().unwrap());
+            game.table.stock.cards.push(deck.cards.pop().unwrap());
         }
     }
 
@@ -50,20 +49,28 @@ impl Game {
 
        // println!("C 1: {:?}", self.table.tableau[col1]);
        // println!("C 2: {:?}", self.table.tableau[col2]);
-        println!("W: {:?}", self.table.waste);
-        println!("S: {:?}", self.table.stock);
-        //println!("F: {:?}", self.table.foundation[col1]);
+        //println!("W: {:?}", self.table.waste);
+        //println!("S: {:?}", self.table.stock);
+        println!("F: {:?}", self.table.foundation[col2]);
  
         //self.table.waste_to_tableau(col1);
-        self.table.tableau_to_tableau(col1, col2);
-        self.table.waste_to_stock();
+        //self.table.tableau_to_tableau(col1, col2);
+        //self.table.waste_to_stock();
+        self.table.tableau_to_foundation(col1, col2);
+        self.table.tableau_to_foundation(col1, col2);
 
         println!("\n====================\n");
 
        // println!("C 1: {:?}", self.table.tableau[col1]);
        // println!("C 2: {:?}", self.table.tableau[col2]);
-        println!("W: {:?}", self.table.waste);
-        println!("S: {:?}", self.table.stock);
-        //println!("F: {:?}", self.table.foundation[col1]);
+        //println!("W: {:?}", self.table.waste);
+       // println!("S: {:?}", self.table.stock);
+        println!("F: {:?}", self.table.foundation[col2]);
     }
+
+    pub fn print(&mut self){
+        self.test();
+        println!("{}", self.table);
+    }
+
 }
