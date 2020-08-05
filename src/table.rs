@@ -39,7 +39,7 @@ impl Table {
 
     pub fn stock_to_waste(&mut self) {
         let mut card = self.stock.cards.pop().unwrap();
-       card.flip();
+        card.flip();
         self.waste.cards.push(card);
     }
 
@@ -84,10 +84,9 @@ impl Default for Foundation {
     }
 }
 
-// TODO
 impl fmt::Display for Table {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}\t{}\t  \t{}\t{}\t{}\t{}\n", self.stock, self.waste, self.foundation[0], self.foundation[1], self.foundation[2], self.foundation[3]);
+        write!(f, "\n{}\t{}\t  \t{}\t{}\t{}\t{}\n\n", self.stock, self.waste, self.foundation[0], self.foundation[1], self.foundation[2], self.foundation[3]);
         for i in 0..7 {
             for j in 0..7 {
                 if i < self.tableau[j].len() {

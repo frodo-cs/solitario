@@ -3,13 +3,15 @@ use crate::table::Table;
 
 #[derive(Debug)]
 pub struct Game {
-    pub table: Table
+    table: Table,
+    finished: bool
 }
 
 impl Game {
     pub fn new(seed: u64) -> Game {
         let mut game = Game {
-            table: Table::new()
+            table: Table::new(),
+            finished: false
         };
 
         let mut deck = Deck::new(seed);
@@ -36,29 +38,13 @@ impl Game {
         }
     }
 
+    fn run(&mut self) {
+        while(!self.finished){
+            
+        }
+    }
+
     pub fn test(&mut self){
-        let col1 = 2;
-        let col2 = 1;
-
-        println!("{}", self.table);
-
-        self.table.stock_to_waste();
-        self.table.stock_to_waste();
-        self.table.stock_to_waste();
-        self.table.stock_to_waste();
-        self.table.stock_to_waste();
-        self.table.stock_to_waste();
-
-        println!("{}", self.table);
-
-        self.table.waste_to_tableau(col1);
-        self.table.waste_to_tableau(col2);
-        self.table.waste_to_tableau(col1);
-        self.table.tableau_to_tableau(col1, col2);
-        // self.table.waste_to_stock();
-        self.table.tableau_to_foundation(col1, col2);
-        self.table.tableau_to_foundation(col2, col1);
-
         println!("{}", self.table);
     }
 }
