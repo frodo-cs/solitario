@@ -24,6 +24,11 @@ impl Table {
         self.tableau[col].push(card);   
     }
 
+    pub fn waste_to_tableau_undo(&mut self, col: usize){
+        let card = self.tableau[col].pop().unwrap();
+        self.waste.cards.push(card);
+    }
+
     pub fn waste_to_stock(&mut self) {
         let mut card : Card;
         while !self.waste.cards.is_empty() {
@@ -37,22 +42,49 @@ impl Table {
         }      
     }
 
+    pub fn waste_to_stock_undo(&mut self) {
+        let mut card : Card;
+        while !self.stock.cards.is_empty() {
+            card = self.stock.cards.pop().unwrap();
+            card.flip();
+            self.waste.cards.push(card);
+        }      
+    }
+
     pub fn stock_to_waste(&mut self) {
         let mut card = self.stock.cards.pop().unwrap();
         card.flip();
         self.waste.cards.push(card);
     }
 
+    pub fn stock_to_waste_undo(&mut self) {
+        let mut card = self.waste.cards.pop().unwrap();
+        card.flip();
+        self.stock.cards.push(card);
+    }
+
     pub fn tableau_to_tableau(&mut self, col1: usize, col2: usize) {
         let card = self.tableau[col1].pop().unwrap(); 
         self.tableau[col2].push(card);
 
-        let card3 = self.tableau[col1].last().unwrap();
-        if self.tableau[col1].len() > 0 && card3.facing_down() {
+        let card2 = self.tableau[col1].last().unwrap();
+        if self.tableau[col1].len() > 0 && card2.facing_down() {
             let mut card3 = self.tableau[col1].pop().unwrap();
             card3.flip();
             self.tableau[col1].push(card3);
         }
+    }
+
+    pub fn tableau_to_tableau_undo(&mut self, col1: usize, col2: usize, flipped: bool) {
+        let card = self.tableau[col2].pop().unwrap(); 
+        
+        if flipped {
+            let mut card2 = self.tableau[col1].pop().unwrap();
+            card2.flip();
+            self.tableau[col1].push(card2);
+        }
+
+        self.tableau[col1].push(card);
     }
 
     pub fn tableau_to_foundation(&mut self, col: usize, rank: usize) {
@@ -65,6 +97,18 @@ impl Table {
             card2.flip();
             self.tableau[col].push(card2);
         }
+    }
+
+    pub fn tableau_to_foundation_undo(&mut self, col: usize, rank: usize, flipped: bool) {
+        let card = self.foundation[rank].cards.pop().unwrap();
+
+        if flipped {
+            let mut card2 = self.tableau[col].pop().unwrap();
+            card2.flip();
+            self.tableau[col].push(card2);
+        }
+
+        self.tableau[col].push(card);
     }
 }
 

@@ -1,4 +1,3 @@
-use std::process::Command;
 use std::env;
 use std::io;
 mod game;
@@ -17,35 +16,39 @@ fn main() {
             Err(_) => println!("El argumento no es un numero por lo tanto se utilizará un seed aleatorio")
         }
     }
-    
+    println!("===================================================");
+    println!(" SOLITARIO");
+    println!("---------------------------------------------------");
+    println!(" <ESC> - Salir");
+    println!(" n/N — Juego nuevo");
+    println!(" <RET> — Carta nueva");
+    println!(" 1, 2, 3, 4, 5, 6 ó 7 - Columnas");
+    println!(" u/U — Undo");
+    println!("===================================================");
+
     let mut g = game::Game::new(seed);
-    g.test();
+    g.print_table();
 
     let mut input = String::new();
     while input.as_str().trim() != "<ESC>" {
         input = read_input();
         match input.as_str().trim() {
-            "n/N" => g.test(),
-            "<RET>" => g.test(),
-            "u/U" => g.test(),
+            "n/N" => g.print_table(),
+            "<RET>" => {
+                g.draw_card();
+                g.print_table();
+            }
+            "u/U" => {
+                g.undo();
+                g.print_table();
+            },
             "<ESC>" => (),
-            a => match a.parse::<u64>() {
-                Ok(ok) => select_column(ok),
-                Err(_) => println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 0, 1, 2, 3,4, 5, 6")
+            a => match a.parse::<usize>() {
+                Ok(ok) => select_column(&mut g, ok),
+                Err(_) => println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7")
             }
         }
     }
-    
-    // g.test();
-
-    /*
-    for i in 0..26 {
-        match g.draw_card() {
-            Ok(n)  => println!("Hay cartas"),
-            Err(n) => println!("No hay cartas"),
-        };
-    }*/
-    //game::start();
 }
 
 fn read_input() -> String {
@@ -60,10 +63,11 @@ fn read_input() -> String {
     }
 }
 
-fn select_column(c: u64) {
-    if c < 7 {
+fn select_column(game: &mut game::Game, c: usize) {
+    if c > 0 && c < 8 {
+        game.play(c);
         println!("Columna: {}", c);
     } else {
-        println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 0, 1, 2, 3,4, 5, 6");
+        println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7");
     }  
 }
