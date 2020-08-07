@@ -4,6 +4,7 @@ mod game;
 mod table;
 mod deck;
 mod card;
+mod rules;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -65,7 +66,7 @@ fn read_input() -> String {
 
 fn select_column(game: &mut game::Game, c: usize) {
     if c > 0 && c < 8 {
-        game.play(c);
+        game.play_card(c);
         println!("Columna: {}", c);
     } else {
         println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7");

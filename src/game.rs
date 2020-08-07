@@ -1,11 +1,13 @@
 use crate::deck::Deck;
 use crate::table::Table;
+use crate::rules;
 
 #[derive(Debug)]
 pub struct Game {
     table: Table,
     finished: bool,
-    history: Vec<(&'static str, usize, usize, bool)>
+    history: Vec<(&'static str, usize, usize, bool)>,
+    possible: Vec<()>
 }
 
 impl Game {
@@ -13,7 +15,8 @@ impl Game {
         let mut game = Game {
             table: Table::new(),
             finished: false,
-            history: vec![]
+            history: vec![],
+            possible: vec![]
         };
 
         let mut deck = Deck::new(seed);
@@ -54,8 +57,43 @@ impl Game {
         println!("{}", self.table);
     }
 
-    pub fn play(&mut self, col: usize){
+    pub fn play_card(&mut self, col: usize){
+        let mut possibilities: Vec<(&'static str, usize, usize)> = vec![];
 
+        // card from tableau to tableau
+        for prob in rules::tableau_check(&self.table, self.table.tableau[col].last().unwrap()){
+            let p = (prob.0, col, prob.2);
+            possibilities.push(p);
+        }
+
+        // card from tableau to foundation
+        for prob in rules::foundation_check(&self.table, self.table.tableau[col].last().unwrap()){
+            let p = (prob.0, col, prob.2);
+            possibilities.push(p);
+        }
+
+        // card from waste to tableau
+        for prob in rules::tableau_check(&self.table, self.table.waste.cards.last().unwrap()){
+            let p = ("waste", col, prob.2);
+            possibilities.push(p);
+        }
+
+        if possibilities.len() == 1 {
+            match possibilities[0].0 {
+                "waste" => {
+
+                },
+                "column" => {
+
+                },
+                "foundation" => {
+
+                },
+                _ => ()
+            }
+        } else {
+
+        }
     }
 
     pub fn undo(&mut self) {

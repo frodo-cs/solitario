@@ -26,8 +26,9 @@ impl Deck {
 
         for card in cards.iter() {
             let rank = &card[0..1];
-            let suit = &card[1..];
-            deck.push(Card::new(rank, suit));
+            let suit = &card[1..2];
+            let color = &card[2..]; 
+            deck.push(Card::new(rank, suit, color));
         }
 
         if seed != 0 {
