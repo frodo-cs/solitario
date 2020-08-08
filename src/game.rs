@@ -63,13 +63,14 @@ impl Game {
         let column =  self.table.tableau[col].last();
         match column {
             Some(c) => {
-                // card from tableau to tableau
+                // card from tableau to tableau FIX, check the first card that is flipped not the last
                 println!("Card: {}", c);
+                println!("tableau_check");
                 for prob in rules::tableau_check(&self.table, c){
                     let p = (prob.0, col, prob.2);
                     possibilities.push(p);
                 }
-
+                println!("foundation_check");
                 // card from tableau to foundation
                 for prob in rules::foundation_check(&self.table, c){
                     let p = (prob.0, col, prob.2);
@@ -81,10 +82,13 @@ impl Game {
 
         // card from waste to tableau
         if self.table.waste.cards.len() > 0 {
-            for prob in rules::tableau_check(&self.table, self.table.waste.cards.last().unwrap()){
-                let p = ("waste", col, prob.2);
-                possibilities.push(p);
-            }
+            println!("waste_check");
+            let column =  &self.table.tableau[col];
+            let card = self.table.waste.cards.last().unwrap();
+            if rules::waste_check(&column, card) {
+                let p = ("waste", 0, col);
+                possibilities.push(p)                
+            }         
         }
 
         if possibilities.len() == 1 {

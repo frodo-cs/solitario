@@ -44,6 +44,22 @@ pub fn foundation_check(table: &Table, card: &Card) -> Vec<(&'static str, usize,
     possibilities
 }
 
+pub fn waste_check(column: &Vec<Card>, card: &Card) -> bool {
+    match column.last() {
+        Some(c) => {
+            if color_check(card, c) && rank_check_t(card, c) {
+                return true
+            }
+        }
+        None => {
+            if open_check(card, "K") {
+                return true
+            }
+        }        
+    }
+    false
+}
+
 fn color_check(origin: &Card, destination: &Card) -> bool {
     origin.color != destination.color
 }

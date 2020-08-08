@@ -132,11 +132,11 @@ impl Default for Foundation {
         Foundation{ cards: vec![] }
     }
 }
-
+// FIX THIS SHIT
 impl fmt::Display for Table {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\n{}\t{}\t  \t{}\t{}\t{}\t{}\n\n", self.stock, self.waste, self.foundation[0], self.foundation[1], self.foundation[2], self.foundation[3]);
-        for i in 0..15 {
+        for i in 0..largest(self) {
             for j in 0..7 {
                 if i < self.tableau[j].len() {
                     write!(f, "{}\t", self.tableau[j][i]);
@@ -148,6 +148,14 @@ impl fmt::Display for Table {
         }
         write!(f, "")
     }
+}
+
+fn largest(t : &Table) -> usize {
+    let mut size: usize = 0;
+    for c in t.tableau.iter() {
+        if c.len() > size { size = c.len() }
+    }
+    size
 }
 
 impl fmt::Display for Pile {
