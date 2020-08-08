@@ -63,16 +63,19 @@ impl Table {
         self.stock.cards.push(card);
     }
 
-    pub fn tableau_to_tableau(&mut self, col1: usize, col2: usize) {
+    pub fn tableau_to_tableau(&mut self, col1: usize, col2: usize) -> bool {
         let card = self.tableau[col1].pop().unwrap(); 
         self.tableau[col2].push(card);
 
-        let card2 = self.tableau[col1].last().unwrap();
-        if self.tableau[col1].len() > 0 && card2.facing_down() {
+        let card2 = self.tableau[col1].last();
+        if self.tableau[col1].len() > 0 && card2.unwrap().facing_down() {
             let mut card3 = self.tableau[col1].pop().unwrap();
             card3.flip();
             self.tableau[col1].push(card3);
+
+            return true
         }
+        false
     }
 
     pub fn tableau_to_tableau_undo(&mut self, col1: usize, col2: usize, flipped: bool) {
@@ -87,7 +90,7 @@ impl Table {
         self.tableau[col1].push(card);
     }
 
-    pub fn tableau_to_foundation(&mut self, col: usize, rank: usize) {
+    pub fn tableau_to_foundation(&mut self, col: usize, rank: usize) -> bool {
         let card = self.tableau[col].pop().unwrap();
         self.foundation[rank].cards.push(card);
 
@@ -96,7 +99,9 @@ impl Table {
             let mut card2 = self.tableau[col].pop().unwrap();
             card2.flip();
             self.tableau[col].push(card2);
+            return true
         }
+        false
     }
 
     pub fn tableau_to_foundation_undo(&mut self, col: usize, rank: usize, flipped: bool) {
@@ -131,7 +136,7 @@ impl Default for Foundation {
 impl fmt::Display for Table {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\n{}\t{}\t  \t{}\t{}\t{}\t{}\n\n", self.stock, self.waste, self.foundation[0], self.foundation[1], self.foundation[2], self.foundation[3]);
-        for i in 0..7 {
+        for i in 0..15 {
             for j in 0..7 {
                 if i < self.tableau[j].len() {
                     write!(f, "{}\t", self.tableau[j][i]);

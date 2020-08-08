@@ -60,40 +60,64 @@ impl Game {
     pub fn play_card(&mut self, col: usize){
         let mut possibilities: Vec<(&'static str, usize, usize)> = vec![];
 
-        // card from tableau to tableau
-        for prob in rules::tableau_check(&self.table, self.table.tableau[col].last().unwrap()){
-            let p = (prob.0, col, prob.2);
-            possibilities.push(p);
-        }
+        let column =  self.table.tableau[col].last();
+        match column {
+            Some(c) => {
+                // card from tableau to tableau
+                println!("Card: {}", c);
+                for prob in rules::tableau_check(&self.table, c){
+                    let p = (prob.0, col, prob.2);
+                    possibilities.push(p);
+                }
 
-        // card from tableau to foundation
-        for prob in rules::foundation_check(&self.table, self.table.tableau[col].last().unwrap()){
-            let p = (prob.0, col, prob.2);
-            possibilities.push(p);
+                // card from tableau to foundation
+                for prob in rules::foundation_check(&self.table, c){
+                    let p = (prob.0, col, prob.2);
+                    possibilities.push(p);
+                }
+            },
+            None => ()
         }
 
         // card from waste to tableau
-        for prob in rules::tableau_check(&self.table, self.table.waste.cards.last().unwrap()){
-            let p = ("waste", col, prob.2);
-            possibilities.push(p);
+        if self.table.waste.cards.len() > 0 {
+            for prob in rules::tableau_check(&self.table, self.table.waste.cards.last().unwrap()){
+                let p = ("waste", col, prob.2);
+                possibilities.push(p);
+            }
         }
 
         if possibilities.len() == 1 {
             match possibilities[0].0 {
                 "waste" => {
-
+                    self.waste_card(possibilities[0]);
                 },
                 "column" => {
-
+                    self.tableau_card(possibilities[0]);         
                 },
                 "foundation" => {
-
+                    self.foundation_card(possibilities[0]);
                 },
                 _ => ()
             }
         } else {
 
         }
+    }
+
+    fn waste_card(&mut self, possibilities: (&'static str, usize, usize)){
+        self.table.waste_to_tableau(possibilities.2); 
+        self.history.push(("waste_to_tableau", possibilities.1, possibilities.2, false))
+    }
+
+    fn tableau_card(&mut self, possibilities: (&'static str, usize, usize)){
+        let flipped = self.table.tableau_to_tableau(possibilities.1, possibilities.2);
+        self.history.push(("tableau_to_tableau", possibilities.1, possibilities.2, flipped))
+    }
+
+    fn foundation_card(&mut self, possibilities: (&'static str, usize, usize)){
+        let flipped = self.table.tableau_to_foundation(possibilities.1, possibilities.2);
+        self.history.push(("tableau_to_foundation", possibilities.1, possibilities.2, flipped))      
     }
 
     pub fn undo(&mut self) {

@@ -34,7 +34,10 @@ fn main() {
     while input.as_str().trim() != "<ESC>" {
         input = read_input();
         match input.as_str().trim() {
-            "n/N" => g.print_table(),
+            "n/N" => {
+                g = game::Game::new(0);
+                g.print_table()
+            },
             "<RET>" => {
                 g.draw_card();
                 g.print_table();
@@ -66,8 +69,9 @@ fn read_input() -> String {
 
 fn select_column(game: &mut game::Game, c: usize) {
     if c > 0 && c < 8 {
-        game.play_card(c);
+        game.play_card(c-1);
         println!("Columna: {}", c);
+        game.print_table();
     } else {
         println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7");
     }  

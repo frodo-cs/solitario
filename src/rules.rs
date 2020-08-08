@@ -8,7 +8,7 @@ pub fn tableau_check(table: &Table, card: &Card) -> Vec<(&'static str, usize, us
     for i in 0..7 {
         match table.tableau[i].last() {
             Some(c) => {
-                if color_check(card, c) && rank_check(card, c) {
+                if color_check(card, c) && rank_check_t(card, c) {
                     possibilities.push(("column", 0, i))
                 }
             }
@@ -19,7 +19,7 @@ pub fn tableau_check(table: &Table, card: &Card) -> Vec<(&'static str, usize, us
             }
         }
     }
-
+    println!("Rules: {:?}", possibilities);
     possibilities
 }
 
@@ -29,7 +29,7 @@ pub fn foundation_check(table: &Table, card: &Card) -> Vec<(&'static str, usize,
     for i in 0..4 {
         match table.foundation[i].cards.last() {
             Some(c) => {
-                if suit_check(card, c) && rank_check(c, card) {
+                if suit_check(card, c) && rank_check_f(card, c) {
                     possibilities.push(("foundation", 0, i));
                 }
             }
@@ -40,7 +40,7 @@ pub fn foundation_check(table: &Table, card: &Card) -> Vec<(&'static str, usize,
             }
         }
     }
-
+    println!("Rules: {:?}", possibilities);
     possibilities
 }
 
@@ -48,9 +48,18 @@ fn color_check(origin: &Card, destination: &Card) -> bool {
     origin.color != destination.color
 }
 
-fn rank_check(origin: &Card, destination: &Card) -> bool {
+fn rank_check_t(origin: &Card, destination: &Card) -> bool {
     let r = Rank::default();
-    r.rank[origin.rank] < r.rank[destination.rank]
+    if destination.rank != "A" {
+        r.rank[origin.rank] == (r.rank[destination.rank] - 1)
+    } else {
+        false
+    }    
+}
+
+fn rank_check_f(origin: &Card, destination: &Card) -> bool {
+    let r = Rank::default();
+    (r.rank[origin.rank]  - 1) == r.rank[destination.rank]
 }
 
 fn open_check(origin: &Card, value: &'static str) -> bool {
