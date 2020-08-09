@@ -167,7 +167,7 @@ impl Game {
         if self.history.len() > 0 {
             let previous = self.history.pop().unwrap();
             // (Move, col origin, row origin, col destination, dif, flag)
-            println!("{:?}", previous);
+
             match previous.0 {
                 "waste_to_tableau" => {
                     self.table.waste_to_tableau_undo(previous.3)
