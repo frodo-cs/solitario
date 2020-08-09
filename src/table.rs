@@ -29,6 +29,16 @@ impl Table {
         self.waste.cards.push(card);
     }
 
+    pub fn waste_to_foundation(&mut self, rank: usize){
+        let card = self.waste.cards.pop().unwrap();
+        self.foundation[rank].cards.push(card);
+    }
+
+    pub fn waste_to_foundation_undo(&mut self, rank: usize){
+        let card = self.foundation[rank].cards.pop().unwrap();
+        self.waste.cards.push(card);
+    }
+
     pub fn waste_to_stock(&mut self) {
         let mut card : Card;
         while !self.waste.cards.is_empty() {
@@ -63,9 +73,21 @@ impl Table {
         self.stock.cards.push(card);
     }
 
-    pub fn tableau_to_tableau(&mut self, col1: usize, col2: usize) -> bool {
-        let card = self.tableau[col1].pop().unwrap(); 
-        self.tableau[col2].push(card);
+    pub fn tableau_to_tableau(&mut self, col1: usize, row: usize, col2: usize) -> bool {
+        let mut length = self.tableau[col1].len();
+        let mut cards: Vec<Card> = vec![];
+
+        while length > row {   
+            let card = self.tableau[col1].pop();
+            match card {
+                Some(c) => cards.push(c),
+                None => ()
+            }
+            length = length-1;
+        }
+
+        cards.reverse();
+        self.tableau[col2].append(&mut cards);
 
         let card2 = self.tableau[col1].last();
         if self.tableau[col1].len() > 0 && card2.unwrap().facing_down() {
@@ -77,25 +99,23 @@ impl Table {
         }
         false
     }
-
-    pub fn tableau_to_tableau_undo(&mut self, col1: usize, col2: usize, flipped: bool) {
-        let card = self.tableau[col2].pop().unwrap(); 
-        
+    // FIX THIS
+    pub fn tableau_to_tableau_undo(&mut self, col1: usize, row: usize, col2: usize, flipped: bool) {     
         if flipped {
             let mut card2 = self.tableau[col1].pop().unwrap();
             card2.flip();
             self.tableau[col1].push(card2);
         }
 
-        self.tableau[col1].push(card);
+        //self.tableau[col1].push(card);
     }
 
     pub fn tableau_to_foundation(&mut self, col: usize, rank: usize) -> bool {
         let card = self.tableau[col].pop().unwrap();
         self.foundation[rank].cards.push(card);
 
-        let card3 = self.tableau[col].last().unwrap();
-        if self.tableau[col].len() > 0 && card3.facing_down() {
+        let card3 = self.tableau[col].last();
+        if self.tableau[col].len() > 0 && card3.unwrap().facing_down() {
             let mut card2 = self.tableau[col].pop().unwrap();
             card2.flip();
             self.tableau[col].push(card2);
@@ -132,7 +152,7 @@ impl Default for Foundation {
         Foundation{ cards: vec![] }
     }
 }
-// FIX THIS SHIT
+
 impl fmt::Display for Table {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\n{}\t{}\t  \t{}\t{}\t{}\t{}\n\n", self.stock, self.waste, self.foundation[0], self.foundation[1], self.foundation[2], self.foundation[3]);

@@ -2,45 +2,50 @@ use std::collections::HashMap;
 use crate::table::Table;
 use crate::card::Card;
 
-pub fn tableau_check(table: &Table, card: &Card) -> Vec<(&'static str, usize, usize)> {
-    let mut possibilities: Vec<(&'static str, usize, usize)> = vec![]; // (where, origin, destination)
+pub fn tableau_check(table: &Table, col: usize) -> Vec<(&'static str, usize, usize, usize)> {
+    let mut possibilities: Vec<(&'static str, usize, usize, usize)> = vec![]; // (where, col origin, row origin, col destination)
    
-    for i in 0..7 {
-        match table.tableau[i].last() {
-            Some(c) => {
-                if color_check(card, c) && rank_check_t(card, c) {
-                    possibilities.push(("column", 0, i))
+    let column = &table.tableau[col];
+
+    for row in 0..column.len() {
+        for i in 0..7 {
+            if !column[row].facing_down(){
+                match table.tableau[i].last() {
+                    Some(c) => {
+                        if color_check(&column[row], c) && rank_check_t(&column[row], c) {
+                            possibilities.push(("columna a columna", col, row, i))
+                        }
+                    }
+                    None => {
+                        if open_check(&column[row], "K") {
+                            possibilities.push(("columna a columna", col, row, i))
+                        }
+                    }
                 }
             }
-            None => {
-                if open_check(card, "K") {
-                    possibilities.push(("column", 0, i))
-                }
-            }
-        }
+        }      
     }
-    println!("Rules: {:?}", possibilities);
+
     possibilities
 }
 
-pub fn foundation_check(table: &Table, card: &Card) -> Vec<(&'static str, usize, usize)> {
-    let mut possibilities: Vec<(&'static str, usize, usize)> = vec![]; // (where, origin, destination)
+pub fn foundation_check(table: &Table, card: &Card) -> Vec<(&'static str, usize, usize, usize)> {
+    let mut possibilities: Vec<(&'static str, usize, usize, usize)> = vec![]; // (where, col origin, row origin, col destination)
 
     for i in 0..4 {
         match table.foundation[i].cards.last() {
             Some(c) => {
                 if suit_check(card, c) && rank_check_f(card, c) {
-                    possibilities.push(("foundation", 0, i));
+                    possibilities.push(("columna a base", 0, 0, i));
                 }
             }
             None => {
                 if open_check(card, "A") {
-                    possibilities.push(("foundation", 0, i))
+                    possibilities.push(("columna a base", 0, 0, i))
                 }
             }
         }
     }
-    println!("Rules: {:?}", possibilities);
     possibilities
 }
 
