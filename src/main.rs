@@ -24,7 +24,6 @@ fn main() {
     println!(" n/N — Juego nuevo");
     println!(" <RET> — Carta nueva");
     println!(" 1, 2, 3, 4, 5, 6 ó 7 - Columnas");
-    println!(" 8 — Mover de pila a base");
     println!(" u/U — Undo");
     println!("===================================================");
 
@@ -50,9 +49,13 @@ fn main() {
             "<ESC>" => (),
             a => match a.parse::<usize>() {
                 Ok(ok) => select_column(&mut g, ok),
-                Err(_) => println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7, 8")
+                Err(_) => println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7")
             }
         }
+    }
+
+    if input != "<ESC>" && g.check_done() {
+        println!("Felicidades!")
     }
 }
 
@@ -69,10 +72,10 @@ fn read_input() -> String {
 }
 
 fn select_column(game: &mut game::Game, c: usize) {
-    if c > 0 && c < 9 {
+    if c > 0 && c < 8 {
         game.play_card(c-1);
         game.print_table();
     } else {
-        println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7, 8");
+        println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7");
     }  
 }

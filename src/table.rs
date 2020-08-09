@@ -19,6 +19,15 @@ impl Table {
         }
     }
 
+    pub fn foundation_full(&mut self) -> bool {
+        for foundation in self.foundation.iter() {
+            if foundation.cards.len() != 13 {
+                return false
+            }
+        }
+        true
+    }
+
     pub fn waste_to_tableau(&mut self, col: usize) {
         let card = self.waste.cards.pop().unwrap();
         self.tableau[col].push(card);   

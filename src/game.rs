@@ -61,41 +61,40 @@ impl Game {
     pub fn play_card(&mut self, col: usize){
         let mut possibilities: Vec<(&'static str, usize, usize, usize)> = vec![]; // (where, col origin, row origin, col destination)
 
-        if col != 7 {
-            // card from tableau to tableau
-            for prob in rules::tableau_check(&self.table, col){
-                possibilities.push(prob);
-            }
-
-            // card from tableau to foundation
-            match self.table.tableau[col].last() {
-                Some(c) => {        
-                    for prob in rules::foundation_check(&self.table, c){
-                        possibilities.push((prob.0, col, prob.2, prob.3));
-                    }
-                },
-                None => ()
-            }
-
-            // card from waste to tableau
-            if self.table.waste.cards.len() > 0 {
-                let column =  &self.table.tableau[col];
-                let card = self.table.waste.cards.last().unwrap();
-                if rules::waste_check(&column, card) {
-                    possibilities.push(("pila a columna", 0, 0, col))                
-                }         
-            }
-        } else {
-            // card from waste to foundation
-            match self.table.waste.cards.last() {
-                Some(c) => {        
-                    for prob in rules::foundation_check(&self.table, c){
-                        possibilities.push(("pila a base", prob.1, prob.2, prob.3));
-                    }
-                },
-                None => ()
-            }
+        // card from tableau to tableau
+        for prob in rules::tableau_check(&self.table, col){
+            possibilities.push(prob);
         }
+
+        // card from tableau to foundation
+        match self.table.tableau[col].last() {
+            Some(c) => {        
+                for prob in rules::foundation_check(&self.table, c){
+                    possibilities.push((prob.0, col, prob.2, prob.3));
+                }
+            },
+            None => ()
+        }
+
+        // card from waste to tableau
+        if self.table.waste.cards.len() > 0 {
+            let column =  &self.table.tableau[col];
+            let card = self.table.waste.cards.last().unwrap();
+            if rules::waste_check(&column, card) {
+                possibilities.push(("pila a columna", 0, 0, col))                
+            }         
+        }
+
+        // card from waste to foundation
+        match self.table.waste.cards.last() {
+            Some(c) => {        
+                for prob in rules::foundation_check(&self.table, c){
+                    possibilities.push(("pila a base", prob.1, prob.2, prob.3));
+                }
+            },
+            None => ()
+        }
+
 
         if possibilities.len() == 1 {
             self.selection(possibilities[0]);
@@ -156,7 +155,6 @@ impl Game {
 
     fn foundation_card(&mut self, possibilities: (&'static str, usize, usize, usize)){
         let flipped = self.table.tableau_to_foundation(possibilities.1, possibilities.3);
-        println!("{:?}", possibilities);
         self.history.push(("tableau_to_foundation", possibilities.1, possibilities.2, possibilities.3, flipped))      
     }
 
@@ -168,7 +166,7 @@ impl Game {
     pub fn undo(&mut self) {
         if self.history.len() > 0 {
             let previous = self.history.pop().unwrap();
-            // (Move, from col, to col, flag)
+            // (Move, col origin, row origin, col destination, flag)
             match previous.0 {
                 "waste_to_tableau" => {
                     self.table.waste_to_tableau_undo(previous.3)
@@ -203,7 +201,7 @@ impl Game {
     }
 
     pub fn check_done(&mut self) -> bool {
-        false
+        self.table.foundation_full()
     }
 }
 
