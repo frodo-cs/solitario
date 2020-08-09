@@ -82,9 +82,10 @@ impl Table {
         self.stock.cards.push(card);
     }
 
-    pub fn tableau_to_tableau(&mut self, col1: usize, row: usize, col2: usize) -> bool {
+    pub fn tableau_to_tableau(&mut self, col1: usize, row: usize, col2: usize) -> (usize, bool) {
         let mut length = self.tableau[col1].len();
         let mut cards: Vec<Card> = vec![];
+        let dif = length - row;
 
         while length > row {   
             let card = self.tableau[col1].pop();
@@ -104,19 +105,33 @@ impl Table {
             card3.flip();
             self.tableau[col1].push(card3);
 
-            return true
+            return (dif, true)
         }
-        false
+        (dif, false)
     }
-    // FIX THIS
-    pub fn tableau_to_tableau_undo(&mut self, col1: usize, row: usize, col2: usize, flipped: bool) {     
+
+    pub fn tableau_to_tableau_undo(&mut self, col1: usize, col2: usize, dif: usize, flipped: bool) {     
         if flipped {
             let mut card2 = self.tableau[col1].pop().unwrap();
             card2.flip();
             self.tableau[col1].push(card2);
         }
 
-        //self.tableau[col1].push(card);
+        let mut diff = dif;
+        let mut cards: Vec<Card> = vec![];
+        
+        while diff > 0 {
+            let card = self.tableau[col2].pop();
+            match card {
+                Some(c) => cards.push(c),
+                None => ()
+            }
+            diff = diff-1;
+        }
+
+        cards.reverse();
+
+        self.tableau[col1].append(&mut cards);
     }
 
     pub fn tableau_to_foundation(&mut self, col: usize, rank: usize) -> bool {

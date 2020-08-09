@@ -7,7 +7,7 @@ use crate::rules;
 pub struct Game {
     table: Table,
     finished: bool,
-    history: Vec<(&'static str, usize, usize, usize, bool)>,
+    history: Vec<(&'static str, usize, usize, usize, usize, bool)>,
     possible: Vec<()>
 }
 
@@ -47,10 +47,10 @@ impl Game {
     pub fn draw_card(&mut self){
         if self.table.stock.cards.len() > 0 {
             self.table.stock_to_waste();
-            self.history.push(("draw", 0, 0, 0, true));
+            self.history.push(("draw", 0, 0, 0, 0, true));
         } else {
             self.table.waste_to_stock();
-            self.history.push(("draw", 0, 0, 0, false));
+            self.history.push(("draw", 0, 0, 0, 0, false));
         }
     }
 
@@ -145,28 +145,29 @@ impl Game {
 
     fn waste_card(&mut self, possibilities: (&'static str, usize, usize, usize)){
         self.table.waste_to_tableau(possibilities.3); 
-        self.history.push(("waste_to_tableau", possibilities.1, possibilities.2, possibilities.3, false))
+        self.history.push(("waste_to_tableau", possibilities.1, possibilities.2, possibilities.3,  0, false))
     }
 
     fn tableau_card(&mut self, possibilities: (&'static str, usize, usize, usize)){
         let flipped = self.table.tableau_to_tableau(possibilities.1, possibilities.2, possibilities.3);
-        self.history.push(("tableau_to_tableau", possibilities.1, possibilities.2, possibilities.3, flipped))
+        self.history.push(("tableau_to_tableau", possibilities.1, possibilities.2, possibilities.3, flipped.0, flipped.1))
     }
 
     fn foundation_card(&mut self, possibilities: (&'static str, usize, usize, usize)){
         let flipped = self.table.tableau_to_foundation(possibilities.1, possibilities.3);
-        self.history.push(("tableau_to_foundation", possibilities.1, possibilities.2, possibilities.3, flipped))      
+        self.history.push(("tableau_to_foundation", possibilities.1, possibilities.2, possibilities.3,  0, flipped))      
     }
 
     fn base_card(&mut self, possibilities: (&'static str, usize, usize, usize)){
         self.table.waste_to_foundation(possibilities.3);
-        self.history.push(("waste_to_foundation", possibilities.1, possibilities.2, possibilities.3, false))      
+        self.history.push(("waste_to_foundation", possibilities.1, possibilities.2, possibilities.3,  0, false))      
     }
 
     pub fn undo(&mut self) {
         if self.history.len() > 0 {
             let previous = self.history.pop().unwrap();
-            // (Move, col origin, row origin, col destination, flag)
+            // (Move, col origin, row origin, col destination, dif, flag)
+            println!("{:?}", previous);
             match previous.0 {
                 "waste_to_tableau" => {
                     self.table.waste_to_tableau_undo(previous.3)
@@ -181,13 +182,13 @@ impl Game {
                     self.table.stock_to_waste_undo()
                 },
                 "tableau_to_tableau" => {
-                    self.table.tableau_to_tableau_undo(previous.1, previous.2, previous.3, previous.4)
+                    self.table.tableau_to_tableau_undo(previous.1, previous.3, previous.4, previous.5)
                 },
                 "tableau_to_foundation" => {
-                    self.table.tableau_to_foundation_undo(previous.1, previous.2, previous.4)
+                    self.table.tableau_to_foundation_undo(previous.1, previous.3, previous.5)
                 },
                 "draw" => {
-                    if previous.4 {
+                    if previous.5 {
                         self.table.stock_to_waste_undo()
                     } else {
                         self.table.waste_to_stock_undo()
