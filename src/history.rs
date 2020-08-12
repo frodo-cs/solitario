@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
 use crate::game::Game;
@@ -6,18 +7,28 @@ use crate::table;
 pub struct History {
     seed: u64,
     history: Vec<(String, usize, u64)>,
-    file: File
+    file: File,
+    name: String
 }
 
 impl History {
     pub fn new(seed: u64) -> History {
+        let mut i: usize = 0;
+
+        while Path::new(format!("game_log_{}.txt", i).as_str()).exists() {
+            i = i+1;
+        }
+
+        let n = format!("game_log_{}.txt", i);
+
         History {
             seed: seed,
             history: vec![],
-            file: match File::create("game_log.txt") {
+            file: match File::create(n.as_str()) {
                 Err(why) => panic!("No se pudo crear el archivo: {}", why),
                 Ok(file) => file,
-            }
+            },
+            name: n
         }
     }
 
@@ -31,6 +42,7 @@ impl History {
             match play.0.as_str() {
                 "n/N" => {
                     g = Game::new(play.2);
+                    s.push_str(format!("\n\nJuego Nuevo\nSeed: {}", g.seed).as_str());
                     s.push_str(format!("\n{}\n", table::table_log(&g.table)).as_str())
                 },
                 "<RET>" => {
@@ -59,7 +71,7 @@ impl History {
         println!("{}", s);
         match self.file.write_all(s.as_bytes()) {
             Err(why) => panic!("No se pudo escribir en el archivo : {}", why),
-            Ok(_) => println!("\nSe creo el archivo del log"),
+            Ok(_) => println!("\nSe creo el archivo {}", self.name),
         }
     }
 
