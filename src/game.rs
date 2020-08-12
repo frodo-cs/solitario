@@ -5,10 +5,11 @@ use crate::rules;
 
 #[derive(Debug)]
 pub struct Game {
-    table: Table,
+    pub table: Table,
     finished: bool,
     history: Vec<(&'static str, usize, usize, usize, usize, bool)>,
-    possible: Vec<()>
+    possible: Vec<()>,
+    pub seed: u64,
 }
 
 impl Game {
@@ -17,10 +18,12 @@ impl Game {
             table: Table::new(),
             finished: false,
             history: vec![],
-            possible: vec![]
+            possible: vec![],
+            seed: seed
         };
 
         let mut deck = Deck::new(seed);
+        deck.gen_deck();
 
         Game::setup_tableu(&mut game, &mut deck);
         Game::setup_stock(&mut game, &mut deck);
@@ -58,7 +61,7 @@ impl Game {
         println!("{}", self.table);
     }
 
-    pub fn play_card(&mut self, col: usize){
+    pub fn play_card(&mut self, col: usize) -> usize {
         let mut possibilities: Vec<(&'static str, usize, usize, usize)> = vec![]; // (where, col origin, row origin, col destination)
 
         // card from tableau to tableau
@@ -96,11 +99,14 @@ impl Game {
         }
 
 
+        let mut sel: usize = 42;
+
         if possibilities.len() == 1 {
             self.selection(possibilities[0]);
         } else if possibilities.len() > 1 {
             let mut input = String::new();
             let none = String::from((possibilities.len()+1).to_string());
+
             while input.as_str().trim() != none {
 
                 for i in 0..possibilities.len() {
@@ -112,17 +118,19 @@ impl Game {
                     a => match a.parse::<usize>() {
                         Ok(ok) => {
                             if ok > 0 && ok <= possibilities.len(){
+                                sel = ok;
                                 self.selection(possibilities[ok-1]);
                                 input = String::from((possibilities.len()+1).to_string());
                             } else {
-                                println!("No es una selección válida")
-                            }
+                                sel = 420;
+                            } 
                         },                      
                         Err(_) => println!("No es una selección válida")
                     }
                 }
             }
         }
+        sel
     }
 
     fn selection(&mut self, possibilities: (&'static str, usize, usize, usize)){
@@ -203,6 +211,52 @@ impl Game {
 
     pub fn check_done(&mut self) -> bool {
         self.table.foundation_full()
+    }
+
+    pub fn play_history(&mut self, col: usize, sel: usize) {
+        let mut possibilities: Vec<(&'static str, usize, usize, usize)> = vec![]; // (where, col origin, row origin, col destination)
+
+        // card from tableau to tableau
+        for prob in rules::tableau_check(&self.table, col){
+            possibilities.push(prob);
+        }
+
+        // card from tableau to foundation
+        match self.table.tableau[col].last() {
+            Some(c) => {        
+                for prob in rules::foundation_check(&self.table, c){
+                    possibilities.push((prob.0, col, prob.2, prob.3));
+                }
+            },
+            None => ()
+        }
+
+        // card from waste to tableau
+        if self.table.waste.cards.len() > 0 {
+            let column =  &self.table.tableau[col];
+            let card = self.table.waste.cards.last().unwrap();
+            if rules::waste_check(&column, card) {
+                possibilities.push(("pila a columna", 0, 0, col))                
+            }         
+        }
+
+        // card from waste to foundation
+        match self.table.waste.cards.last() {
+            Some(c) => {        
+                for prob in rules::foundation_check(&self.table, c){
+                    possibilities.push(("pila a base", prob.1, prob.2, prob.3));
+                }
+            },
+            None => ()
+        }
+
+        if possibilities.len() == 1 {
+            self.selection(possibilities[0])
+        } else if possibilities.len() > 1 {
+            if sel < possibilities.len() {
+                self.selection(possibilities[sel])
+            }          
+        }
     }
 }
 

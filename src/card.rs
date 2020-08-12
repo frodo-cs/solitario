@@ -25,6 +25,10 @@ impl Card {
     pub fn facing_down(self) -> bool {
         self.face_down
     }
+
+    pub fn to_log(self) -> String {
+        format!("{}{}{}", self.rank, self.suit, self.color)
+    }
 }
 
 impl fmt::Display for Card {

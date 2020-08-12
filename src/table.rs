@@ -223,4 +223,25 @@ impl fmt::Display for Foundation {
     }
 }
 
+pub fn table_log(t : &Table) -> String {
+    let mut s: String = String::new(); 
+    let stock = match t.stock.cards.last() {
+        Some(e) => e.to_log(),
+        None => "___".to_string()
+    };
+
+    s.push_str(format!("\n{}\t{}\t  \t{}\t{}\t{}\t{}\n\n", stock, t.waste, t.foundation[0], t.foundation[1], t.foundation[2], t.foundation[3]).as_str());
+    for i in 0..largest(t) {
+        for j in 0..7 {
+            if i < t.tableau[j].len() {
+                s.push_str(format!("{}\t", t.tableau[j][i].to_log()).as_str());
+            } else {
+                s.push_str("  \t");
+            }       
+        }
+        s.push_str("\n");
+    }
+    s
+}
+
 

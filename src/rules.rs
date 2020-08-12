@@ -4,7 +4,6 @@ use crate::card::Card;
 
 pub fn tableau_check(table: &Table, col: usize) -> Vec<(&'static str, usize, usize, usize)> {
     let mut possibilities: Vec<(&'static str, usize, usize, usize)> = vec![]; // (where, col origin, row origin, col destination)
-   
     let column = &table.tableau[col];
 
     for row in 0..column.len() {

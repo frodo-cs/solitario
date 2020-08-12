@@ -1,22 +1,23 @@
 use rand::{seq::SliceRandom, SeedableRng};
-use rand::Rng;
 use rand::rngs::StdRng;
 
 use crate::card::Card;
 
 #[derive(Debug)]
 pub struct Deck {
-    pub cards: Vec<Card>
+    pub cards: Vec<Card>,
+    pub seed: u64
 }
 
 impl Deck {
     pub fn new(seed: u64) -> Deck {
         Deck {
-            cards: Deck::gen_deck(seed)
+            cards: vec![],
+            seed: seed
         }
     }
 
-    pub fn gen_deck(seed: u64) -> Vec<Card> {
+    pub fn gen_deck(&mut self) {
         let mut deck = vec![];
 
         let cards = ["2Cr", "3Cr","4Cr","5Cr","6Cr","7Cr","8Cr","9Cr","ZCr","JCr","QCr","KCr","ACr",
@@ -31,21 +32,11 @@ impl Deck {
             deck.push(Card::new(rank, suit, color));
         }
 
-        if seed != 0 {
-            Deck::shuffle_with_seed(seed, deck)
-        } else {
-            Deck::shuffle(deck)
-        }
+        self.cards = Deck::shuffle(self.seed, deck)
     }
 
-    fn shuffle_with_seed(seed: u64, mut deck: Vec<Card>) -> Vec<Card> {      
+    fn shuffle(seed: u64, mut deck: Vec<Card>) -> Vec<Card> {      
         let mut s = StdRng::seed_from_u64(seed);
-        deck.shuffle(&mut s);
-        deck
-    }
-
-    fn shuffle(mut deck: Vec<Card>) -> Vec<Card> {      
-        let mut s = StdRng::seed_from_u64(rand::thread_rng().gen());
         deck.shuffle(&mut s);
         deck
     }
