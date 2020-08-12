@@ -28,6 +28,7 @@ fn main() {
     println!(" <RET> — Carta nueva");
     println!(" 1, 2, 3, 4, 5, 6 ó 7 - Columnas");
     println!(" u/U — Undo");
+    println!(" Después de terminar la partida se imprime un log");
     println!("===================================================");
 
     // generate seed
