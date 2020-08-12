@@ -55,7 +55,7 @@ fn main() {
     }
 
     if input != "<ESC>" && g.check_done() {
-        println!("Felicidades!")
+        println!("Felicidades has ganado el juego!")
     }
 }
 
@@ -79,3 +79,5 @@ fn select_column(game: &mut game::Game, c: usize) {
         println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7");
     }  
 }
+
+// seed terminable 7
