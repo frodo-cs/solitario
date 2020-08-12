@@ -73,10 +73,12 @@ fn main() {
     }
 
     if input != "<ESC>" && g.check_done() {
-        println!("Felicidades has ganado el juego!")
+        println!("\nFelicidades has ganado el juego!\n")
     }
 
     h.generate_log();
+    println!("\nPresiona cualquier tecla para salir");
+    read_input();
 }
 
 fn read_input() -> String {
