@@ -8,6 +8,8 @@ mod card;
 mod rules;
 mod history;
 
+use crossterm::event::{ read, Event, KeyCode, KeyEvent };
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let mut seed: u64 = 0;
@@ -40,39 +42,62 @@ fn main() {
     let mut h = history::History::new(g.seed);
     g.print_table();
 
-    let mut input = String::new();
     let mut sel: usize = 0;
-    while input.as_str().trim() != "<ESC>" && !g.check_done() {
-        input = read_input();
-        match input.as_str().trim() {
-            "n/N" => {
-                seed = rand::thread_rng().gen();
-                g = game::Game::new(seed);
-                h.add_play(("n/N".to_string(), sel, seed));
-                g.print_table()
-            },
-            "<RET>" => {
+
+    loop {
+        match read().unwrap() {
+            Event::Key(KeyEvent {
+                code: KeyCode::Enter,
+                ..
+            }) => {
+                println!("<RET>");
                 g.draw_card();
                 h.add_play(("<RET>".to_string(), sel, seed));
                 g.print_table();
-            }
-            "u/U" => {
-                g.undo();
-                h.add_play(("u/U".to_string(), sel, seed));
-                g.print_table();
             },
-            "<ESC>" => h.add_play(("<ESC>".to_string(), sel, seed)),
-            a => match a.parse::<usize>() {
-                Ok(ok) => {
-                    sel = select_column(&mut g, ok);
-                    h.add_play((ok.to_string(), sel, seed));
-                },
-                Err(_) => println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7")
-            }
+
+            Event::Key(KeyEvent {
+                code: KeyCode::Esc,
+                ..
+            }) => {
+                println!("<ESC>");
+                h.add_play(("<ESC>".to_string(), sel, seed));
+                break
+            },
+
+            Event::Key(KeyEvent {
+                code: KeyCode::Char(c),
+                ..
+            }) => {
+                match c {
+                    'n' => {
+                        println!("n/N");
+                        seed = rand::thread_rng().gen();
+                        g = game::Game::new(seed);
+                        h.add_play(("n/N".to_string(), sel, seed));
+                        g.print_table()
+                    },
+                    'u' => {
+                        println!("u/U");
+                        g.undo();
+                        h.add_play(("u/U".to_string(), sel, seed));
+                        g.print_table();
+                    },
+                    a => match a.to_string().parse::<usize>() {
+                        Ok(ok) => {
+                            println!("{}", ok);
+                            sel = select_column(&mut g, ok);
+                            h.add_play((ok.to_string(), sel, seed));
+                        },
+                        Err(_) => println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7")
+                    }
+                }
+            },
+            _ => {}
         }
     }
 
-    if input != "<ESC>" && g.check_done() {
+    if g.check_done() {
         println!("\nFelicidades has ganado el juego!\n")
     }
 

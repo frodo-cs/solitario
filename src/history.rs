@@ -35,7 +35,7 @@ impl History {
     pub fn generate_log(&mut self){
         let mut s: String = String::new();
         let mut g = Game::new(self.seed);
-        s.push_str(format!("Historia del juego\nSeed: {}\n", self.seed).as_str());       
+        s.push_str(format!("\nHistoria del juego\nSeed: {}\n", self.seed).as_str());       
         s.push_str(format!("{}\n", table::table_log(&g.table)).as_str());
         for play in self.history.iter() {
             s.push_str(play.0.as_str());
