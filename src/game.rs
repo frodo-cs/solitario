@@ -1,7 +1,6 @@
 use std::io;
 use crate::deck::Deck;
 use crate::table::Table;
-use crate::table;
 use crate::rules;
 
 #[derive(Debug)]

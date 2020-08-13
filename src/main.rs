@@ -138,6 +138,8 @@ fn main() {
         Err(why) => panic!("No se pudo escribir en el archivo : {}", why),
         Ok(_) => println!("\nSe creo el archivo {}", file_name),
     }
+
+    println!("{}", history);
    
     println!("\nPresiona cualquier tecla para salir");
     read_input();
