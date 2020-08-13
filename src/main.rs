@@ -1,3 +1,6 @@
+use std::path::Path;
+use std::fs::File;
+use std::io::prelude::*;
 use rand::Rng;
 use std::env;
 use std::io;
@@ -6,7 +9,6 @@ mod table;
 mod deck;
 mod card;
 mod rules;
-mod history;
 
 use crossterm::event::{ read, Event, KeyCode, KeyEvent };
 
@@ -37,14 +39,35 @@ fn main() {
     if args.len() == 1 {
         seed = rand::thread_rng().gen();
     }
+
+    // create file =============================================
+
+    let mut i: usize = 0;
+
+    while Path::new(format!("game_log_{}.txt", i).as_str()).exists() {
+        i = i+1;
+    }
+
+    let file_name = format!("game_log_{}.txt", i);
+
+    let mut file =  match File::create(file_name.as_str()) {
+        Err(why) => panic!("No se pudo crear el archivo: {}", why),
+        Ok(file) => file,
+    };
+
+    // =========================================================
     
     let mut g = game::Game::new(seed);
-    let mut h = history::History::new(g.seed);
+    let mut history: String = String::new();
+
+    history.push_str(format!("\nHistoria del juego\nSeed: {}\n", seed).as_str());       
+    history.push_str(format!("{}\n", table::table_log(&g.table)).as_str());
+
     g.print_table();
 
-    let mut sel: usize = 0;
-
     loop {
+        if g.check_done() { break }
+
         match read().unwrap() {
             Event::Key(KeyEvent {
                 code: KeyCode::Enter,
@@ -52,8 +75,9 @@ fn main() {
             }) => {
                 println!("<RET>");
                 g.draw_card();
-                h.add_play(("<RET>".to_string(), sel, seed));
                 g.print_table();
+                history.push_str("<RET>");
+                history.push_str(format!("\n{}\n", table::table_log(&g.table)).as_str())
             },
 
             Event::Key(KeyEvent {
@@ -61,7 +85,7 @@ fn main() {
                 ..
             }) => {
                 println!("<ESC>");
-                h.add_play(("<ESC>".to_string(), sel, seed));
+                history.push_str("<ESC>");
                 break
             },
 
@@ -74,22 +98,29 @@ fn main() {
                         println!("n/N");
                         seed = rand::thread_rng().gen();
                         g = game::Game::new(seed);
-                        h.add_play(("n/N".to_string(), sel, seed));
-                        g.print_table()
+                        g.print_table();
+                        history.push_str(format!("\n\nJuego Nuevo\nSeed: {}", g.seed).as_str());
+                        history.push_str(format!("\n{}\n", table::table_log(&g.table)).as_str());
                     },
                     'u' => {
                         println!("u/U");
                         g.undo();
-                        h.add_play(("u/U".to_string(), sel, seed));
                         g.print_table();
+                        history.push_str("u/U");
+                        history.push_str(format!("\n{}\n", table::table_log(&g.table)).as_str())
                     },
                     a => match a.to_string().parse::<usize>() {
                         Ok(ok) => {
                             println!("{}", ok);
-                            sel = select_column(&mut g, ok);
-                            h.add_play((ok.to_string(), sel, seed));
+                            let sel = select_column(&mut g, ok);
+                            history.push_str(format!("{}", ok).as_str());
+                            if sel == 420 { history.push_str(" Ninguna") } else if sel != 42 { history.push_str(format!(" {}", sel).as_str()) } 
+                            history.push_str(format!("\n{}\n", table::table_log(&g.table)).as_str())
                         },
-                        Err(_) => println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7")
+                        Err(_) => {
+                            history.push_str("\nNo es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7");
+                            println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7")
+                        }
                     }
                 }
             },
@@ -100,8 +131,14 @@ fn main() {
     if g.check_done() {
         println!("\nFelicidades has ganado el juego!\n")
     }
+    println!("\nPresiona cualquier tecla para generar el log");
+    read_input();
 
-    h.generate_log();
+    match file.write_all(history.as_bytes()) {
+        Err(why) => panic!("No se pudo escribir en el archivo : {}", why),
+        Ok(_) => println!("\nSe creo el archivo {}", file_name),
+    }
+   
     println!("\nPresiona cualquier tecla para salir");
     read_input();
 }

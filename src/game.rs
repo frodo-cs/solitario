@@ -1,6 +1,7 @@
 use std::io;
 use crate::deck::Deck;
 use crate::table::Table;
+use crate::table;
 use crate::rules;
 
 #[derive(Debug)]
@@ -211,52 +212,6 @@ impl Game {
 
     pub fn check_done(&mut self) -> bool {
         self.table.foundation_full()
-    }
-
-    pub fn play_history(&mut self, col: usize, sel: usize) {
-        let mut possibilities: Vec<(&'static str, usize, usize, usize)> = vec![]; // (where, col origin, row origin, col destination)
-
-        // card from tableau to tableau
-        for prob in rules::tableau_check(&self.table, col){
-            possibilities.push(prob);
-        }
-
-        // card from tableau to foundation
-        match self.table.tableau[col].last() {
-            Some(c) => {        
-                for prob in rules::foundation_check(&self.table, c){
-                    possibilities.push((prob.0, col, prob.2, prob.3));
-                }
-            },
-            None => ()
-        }
-
-        // card from waste to tableau
-        if self.table.waste.cards.len() > 0 {
-            let column =  &self.table.tableau[col];
-            let card = self.table.waste.cards.last().unwrap();
-            if rules::waste_check(&column, card) {
-                possibilities.push(("pila a columna", 0, 0, col))                
-            }         
-        }
-
-        // card from waste to foundation
-        match self.table.waste.cards.last() {
-            Some(c) => {        
-                for prob in rules::foundation_check(&self.table, c){
-                    possibilities.push(("pila a base", prob.1, prob.2, prob.3));
-                }
-            },
-            None => ()
-        }
-
-        if possibilities.len() == 1 {
-            self.selection(possibilities[0])
-        } else if possibilities.len() > 1 {
-            if sel < possibilities.len() {
-                self.selection(possibilities[sel])
-            }          
-        }
     }
 }
 
