@@ -1,0 +1,64 @@
+
+Historia del juego
+Seed: 7
+
+ADr	___	  	___	___	___	___
+
+3Cr	5Dr	JEn	2Tn	9Tn	5Cr	4Dr	
+  	2En	8Dr	ZCr	3En	QTn	7Dr	
+  	  	8Cr	7Tn	2Dr	ACr	KDr	
+  	  	  	6En	KTn	9En	9Dr	
+  	  	  	  	QCr	AEn	3Tn	
+  	  	  	  	  	8Tn	2Cr	
+  	  	  	  	  	  	KEn	
+
+2
+
+ADr	___	  	___	___	___	___
+
+3Cr	5Dr	JEn	2Tn	9Tn	5Cr	4Dr	
+2En	  	8Dr	ZCr	3En	QTn	7Dr	
+  	  	8Cr	7Tn	2Dr	ACr	KDr	
+  	  	  	6En	KTn	9En	9Dr	
+  	  	  	  	QCr	AEn	3Tn	
+  	  	  	  	  	8Tn	2Cr	
+  	  	  	  	  	  	KEn	
+
+5
+
+ADr	___	  	___	___	___	___
+
+3Cr	5Dr	JEn	2Tn	9Tn	5Cr	4Dr	
+2En	  	8Dr	ZCr	3En	QTn	7Dr	
+  	  	8Cr	7Tn	2Dr	ACr	KDr	
+  	  	  	6En	KTn	9En	9Dr	
+  	  	  	  	  	AEn	3Tn	
+  	  	  	  	  	8Tn	2Cr	
+  	  	  	  	  	  	KEn	
+  	  	  	  	  	  	QCr	
+
+2
+
+ADr	___	  	___	___	___	___
+
+3Cr	  	JEn	2Tn	9Tn	5Cr	4Dr	
+2En	  	8Dr	ZCr	3En	QTn	7Dr	
+  	  	8Cr	7Tn	2Dr	ACr	KDr	
+  	  	  	6En	KTn	9En	9Dr	
+  	  	  	5Dr	  	AEn	3Tn	
+  	  	  	  	  	8Tn	2Cr	
+  	  	  	  	  	  	KEn	
+  	  	  	  	  	  	QCr	
+
+7 1
+
+ADr	___	  	___	___	___	___
+
+3Cr	KEn	JEn	2Tn	9Tn	5Cr	4Dr	
+2En	QCr	8Dr	ZCr	3En	QTn	7Dr	
+  	  	8Cr	7Tn	2Dr	ACr	KDr	
+  	  	  	6En	KTn	9En	9Dr	
+  	  	  	5Dr	  	AEn	3Tn	
+  	  	  	  	  	8Tn	2Cr	
+
+<ESC>

@@ -1,3 +1,4 @@
+#![allow(warnings, unused)]
 use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
@@ -10,7 +11,10 @@ mod deck;
 mod card;
 mod rules;
 
-use crossterm::event::{ read, Event, KeyCode, KeyEvent };
+use crossterm::{ 
+    terminal::{enable_raw_mode, disable_raw_mode },
+    event::{ read, Event, KeyCode, KeyEvent }
+};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -64,7 +68,7 @@ fn main() {
     history.push_str(format!("{}\n", table::table_log(&g.table)).as_str());
 
     g.print_table();
-
+    enable_raw_mode();
     loop {
         if g.check_done() { break }
 
@@ -72,10 +76,12 @@ fn main() {
             Event::Key(KeyEvent {
                 code: KeyCode::Enter,
                 ..
-            }) => {
-                println!("<RET>");
+            }) => {           
                 g.draw_card();
-                g.print_table();
+                disable_raw_mode();
+                println!("<RET>");
+                g.print_table();            
+                enable_raw_mode();
                 history.push_str("<RET>");
                 history.push_str(format!("\n{}\n", table::table_log(&g.table)).as_str())
             },
@@ -84,7 +90,9 @@ fn main() {
                 code: KeyCode::Esc,
                 ..
             }) => {
+                disable_raw_mode();
                 println!("<ESC>");
+                enable_raw_mode();
                 history.push_str("<ESC>");
                 break
             },
@@ -94,23 +102,28 @@ fn main() {
                 ..
             }) => {
                 match c {
-                    'n' => {
-                        println!("n/N");
+                    'n' => {                       
                         seed = rand::thread_rng().gen();
                         g = game::Game::new(seed);
+                        disable_raw_mode();
+                        println!("n/N");
                         g.print_table();
+                        enable_raw_mode();
                         history.push_str(format!("\n\nJuego Nuevo\nSeed: {}", g.seed).as_str());
                         history.push_str(format!("\n{}\n", table::table_log(&g.table)).as_str());
                     },
-                    'u' => {
-                        println!("u/U");
+                    'u' => {               
                         g.undo();
+                        disable_raw_mode();
+                        println!("u/U");
                         g.print_table();
+                        enable_raw_mode();
                         history.push_str("u/U");
                         history.push_str(format!("\n{}\n", table::table_log(&g.table)).as_str())
                     },
                     a => match a.to_string().parse::<usize>() {
                         Ok(ok) => {
+                            disable_raw_mode();
                             println!("{}", ok);
                             let sel = select_column(&mut g, ok);
                             history.push_str(format!("{}", ok).as_str());
@@ -119,7 +132,9 @@ fn main() {
                         },
                         Err(_) => {
                             history.push_str("\nNo es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7");
-                            println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7")
+                            disable_raw_mode();
+                            println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7");
+                            enable_raw_mode();
                         }
                     }
                 }
@@ -127,7 +142,7 @@ fn main() {
             _ => {}
         }
     }
-
+    disable_raw_mode();
     if g.check_done() {
         println!("\nFelicidades has ganado el juego!\n")
     }
@@ -136,13 +151,13 @@ fn main() {
 
     match file.write_all(history.as_bytes()) {
         Err(why) => panic!("No se pudo escribir en el archivo : {}", why),
-        Ok(_) => println!("\nSe creo el archivo {}", file_name),
+        Ok(_) =>  println!("\nSe creo el archivo {}", file_name),
     }
 
-    println!("{}", history);
+    //println!("{}", history);
    
     println!("\nPresiona cualquier tecla para salir");
-    read_input();
+    read_input();   
 }
 
 fn read_input() -> String {
@@ -163,8 +178,9 @@ fn select_column(game: &mut game::Game, c: usize) -> usize {
         sel = game.play_card(c-1);
         game.print_table();
     } else {
-        println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7");
+        println!("No es un valor válido\nValores válidos: <ESC>, <RET>, u/U, n/N, 1, 2, 3,4, 5, 6, 7");        
     } 
+    enable_raw_mode();
     sel 
 }
 
